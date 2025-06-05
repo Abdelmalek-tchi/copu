@@ -1,32 +1,32 @@
 import os
-import asyncio
+import time
 import datetime
-from telethon import TelegramClient
-from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
+from telegram import Bot
+from telegram.constants import ParseMode
+from telegram.error import TelegramError
 
-api_id = 23831415
-api_hash = '9f43a4fe515e3838df92c644f55b8b94'
-source_channel = "https://t.me/blombardsignal"
-target_channel = "https://t.me/cryptsight"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+SOURCE_CHAT_ID = int(os.getenv("SOURCE_CHAT_ID"))
+TARGET_CHAT_ID = int(os.getenv("TARGET_CHAT_ID"))
 
-# Setup client
-client = TelegramClient("session", api_id, api_hash)
+bot = Bot(token="8005462987:AAG6O8mt4XWI6C4BRNshCz90svamf-RQ-6Y")
 
-async def forward_recent_messages():
-    await client.start()
-    now = datetime.datetime.utcnow()
-    thirty_minutes_ago = now - datetime.timedelta(minutes=30)
+def forward_recent_messages():
+    now = int(time.time())
+    thirty_minutes_ago = now - 30 * 60
 
-    print(f"⏳ Fetching messages from last 30 minutes in: {source_channel}")
-    async for message in client.iter_messages(source_channel, offset_date=thirty_minutes_ago, reverse=True):
-        try:
-            if message.text or message.media:
-                await client.send_message(target_channel, message)
-                print(f"✅ Forwarded message ID {message.id}")
-        except Exception as e:
-            print(f"⚠️ Error forwarding message ID {message.id}: {e}")
+    updates = bot.get_updates()
+    for update in updates:
+        if update.message and update.message.chat.id == SOURCE_CHAT_ID:
+            message = update.message
+            message_time = int(message.date.timestamp())
 
-    await client.disconnect()
+            if message_time >= thirty_minutes_ago:
+                try:
+                    bot.copy_message(chat_id=TARGET_CHAT_ID, from_chat_id=SOURCE_CHAT_ID, message_id=message.message_id)
+                    print(f"✅ Copied message {message.message_id}")
+                except TelegramError as e:
+                    print(f"⚠️ Error copying message: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(forward_recent_messages())
+    forward_recent_messages()
