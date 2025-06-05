@@ -1,16 +1,13 @@
 import os
 import asyncio
 import datetime
-from dotenv import load_dotenv
 from telethon import TelegramClient
 from telethon.tl.types import MessageMediaPhoto, MessageMediaDocument
 
-# Load .env variables
-load_dotenv()
-api_id = int(os.getenv("API_ID"))
-api_hash = os.getenv("API_HASH")
-source_channel = os.getenv("SOURCE_CHANNEL")
-target_channel = os.getenv("TARGET_CHANNEL")
+api_id = 23831415
+api_hash = '9f43a4fe515e3838df92c644f55b8b94'
+source_channel = "https://t.me/blombardsignal"
+target_channel = "https://t.me/cryptsight"
 
 # Setup client
 client = TelegramClient("session", api_id, api_hash)
