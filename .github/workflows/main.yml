@@ -20,9 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install telethon python-dotenv
-
-      - name: Create .env
+          pip install telethon 
 
       - name: Run script
         run: python main.py
