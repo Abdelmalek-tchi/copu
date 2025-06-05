@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install telegram
+          pip install python-telegram-bot==13.15
 
       - name: Run script
 
