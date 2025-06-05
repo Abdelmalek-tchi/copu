@@ -6,9 +6,8 @@ from telegram.constants import ParseMode
 from telegram.error import TelegramError
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-SOURCE_CHAT_ID = int(os.getenv("SOURCE_CHAT_ID"))
-TARGET_CHAT_ID = int(os.getenv("TARGET_CHAT_ID"))
-
+SOURCE_CHAT_ID = "https://t.me/blombardsignal"
+TARGET_CHAT_ID = "https://t.me/cryptsight"
 bot = Bot(token="8005462987:AAG6O8mt4XWI6C4BRNshCz90svamf-RQ-6Y")
 
 def forward_recent_messages():
