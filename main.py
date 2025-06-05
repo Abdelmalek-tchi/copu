@@ -1,32 +1,33 @@
-import os
-import time
-import datetime
-from telegram import Bot
-from telegram.error import TelegramError
+# main.py
+
+import asyncio
+from datetime import datetime, timedelta
+from telethon import TelegramClient
 
 
-SOURCE_CHAT_ID = "https://t.me/blombardsignal"
-TARGET_CHAT_ID = "https://t.me/cryptsight"
-bot = Bot(token="8005462987:AAG6O8mt4XWI6C4BRNshCz90svamf-RQ-6Y")
+API_ID = 23831415
+API_HASH = '9f43a4fe515e3838df92c644f55b8b94'
+SESSION_NAME = "session"
+SOURCE_CHANNEL = "https://t.me/blombardsignal"
+TARGET_CHANNEL = "https://t.me/cryptsight"
 
-def forward_recent_messages():
-    now = int(time.time())
-    thirty_minutes_ago = now - 30 * 60
+client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
 
-    updates = bot.get_updates()
+async def forward_recent_messages():
+    await client.start()
+    print("Client started.")
 
-    for update in updates:
-        message = update.message
-        if not message or message.chat.id != SOURCE_CHAT_ID:
-            continue
+    now = datetime.utcnow()
+    cutoff = now - timedelta(minutes=30)
 
-        message_time = int(message.date.timestamp())
-        if message_time >= thirty_minutes_ago:
-            try:
-                bot.copy_message(chat_id=TARGET_CHAT_ID, from_chat_id=SOURCE_CHAT_ID, message_id=message.message_id)
-                print(f"✅ Copied message {message.message_id}")
-            except TelegramError as e:
-                print(f"⚠️ Error copying message: {e}")
+    async for message in client.iter_messages(SOURCE_CHANNEL, reverse=True, offset_date=cutoff):
+        try:
+            await client.forward_messages(TARGET_CHANNEL, message)
+            print(f"Forwarded: {message.id}")
+        except Exception as e:
+            print(f"Failed to forward message {message.id}: {e}")
+
+    await client.disconnect()
 
 if __name__ == "__main__":
-    forward_recent_messages()
+    asyncio.run(forward_recent_messages())
